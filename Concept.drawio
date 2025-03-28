@@ -114,6 +114,12 @@
         <mxCell id="D2Z6zz4tuJewYaayQMhZ-28" value="All images are processed by the pre-trained model" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="832.5" y="250" width="125" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-30" value="" style="endArrow=none;dashed=1;html=1;rounded=0;dashPattern=12 12;strokeWidth=3;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="759.33" y="920" as="sourcePoint" />
+            <mxPoint x="759.33" y="740" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>

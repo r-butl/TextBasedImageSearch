@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.1.3">
   <diagram name="Page-1" id="OzEsfnNPmb5Dr2YRYola">
-    <mxGraphModel dx="1166" dy="594" grid="0" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1513" dy="967" grid="0" gridSize="10" guides="0" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -110,6 +110,103 @@
         </mxCell>
         <mxCell id="D2Z6zz4tuJewYaayQMhZ-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.037;entryY=0.537;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="D2Z6zz4tuJewYaayQMhZ-37" target="D2Z6zz4tuJewYaayQMhZ-23">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-47" value="Pre-trained Sentence Encoder" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="76" y="-267" width="90" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-48" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="196" y="-299.5" width="20" height="155" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-49" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="D2Z6zz4tuJewYaayQMhZ-47" target="D2Z6zz4tuJewYaayQMhZ-48" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="336" y="-162" as="sourcePoint" />
+            <mxPoint x="196" y="-227" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-50" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="D2Z6zz4tuJewYaayQMhZ-51" target="D2Z6zz4tuJewYaayQMhZ-47" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-51" value="&quot;A dog with a blue hat&quot;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-14" y="-237" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-52" value="Vector Representation of Text" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="142" y="-336" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-53" value="Our Neural Net" style="shape=tape;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="256" y="-292" width="140" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-54" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="436" y="-302" width="20" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-55" value="Image Feature Vector Prediction" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="379" y="-340" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-56" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" source="D2Z6zz4tuJewYaayQMhZ-48" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="216" y="-224" as="sourcePoint" />
+            <mxPoint x="257" y="-222" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-57" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="396" y="-227.5" as="sourcePoint" />
+            <mxPoint x="436" y="-227" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-58" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" source="D2Z6zz4tuJewYaayQMhZ-59" target="D2Z6zz4tuJewYaayQMhZ-72" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-59" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://images4-a.ravelrycache.com/uploads/LuckyFoxKnits/502380641/BLue_Bobble_Hat_Cover_medium2.jpg;" vertex="1" parent="1">
+          <mxGeometry x="743" y="-268.19" width="147.47" height="98.39" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-65" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="606" y="-304" width="20" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-66" value="Ground Truth Image Feature Vector&amp;nbsp;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="556" y="-346" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-67" value="" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;width=76.81818181818181;endSize=7.486363636363635;" edge="1" parent="1">
+          <mxGeometry width="100" height="100" relative="1" as="geometry">
+            <mxPoint x="466" y="-227.5" as="sourcePoint" />
+            <mxPoint x="596" y="-227.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-68" value="Loss Calculation" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="D2Z6zz4tuJewYaayQMhZ-67">
+          <mxGeometry x="0.4238" y="7" relative="1" as="geometry">
+            <mxPoint x="-33" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-70" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;endWidth=31.388888888888882;endSize=8.058333333333334;width=68.33333333333334;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="236" y="-122" as="sourcePoint" />
+            <mxPoint x="426" y="-122" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-71" value="Our Model&amp;nbsp;&lt;div&gt;Predicts what the&lt;/div&gt;&lt;div&gt;Image Feature representation&lt;/div&gt;&lt;div&gt;&amp;nbsp;would look like&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="D2Z6zz4tuJewYaayQMhZ-70">
+          <mxGeometry x="-0.0333" y="-16" relative="1" as="geometry">
+            <mxPoint x="-2" y="-16" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-72" value="Pre-trained Image Encoder or Features from VGG19" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="651" y="-264" width="75" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-73" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.037;entryY=0.537;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" source="D2Z6zz4tuJewYaayQMhZ-72" target="D2Z6zz4tuJewYaayQMhZ-65" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-75" value="" style="endArrow=classic;html=1;rounded=0;" edge="1" parent="1" target="D2Z6zz4tuJewYaayQMhZ-53">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="526" y="-265" as="sourcePoint" />
+            <mxPoint x="320" y="-412" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="526" y="-370" />
+              <mxPoint x="328" y="-370" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="D2Z6zz4tuJewYaayQMhZ-76" value="Weight Adjustment" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="D2Z6zz4tuJewYaayQMhZ-75">
+          <mxGeometry x="0.0746" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>

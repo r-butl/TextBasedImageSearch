@@ -98,7 +98,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="D2Z6zz4tuJewYaayQMhZ-25" value="Vector Representation of each Image" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="695" y="50" width="130" height="30" as="geometry" />
+          <mxGeometry x="695" y="120" width="130" height="30" as="geometry" />
         </mxCell>
         <mxCell id="D2Z6zz4tuJewYaayQMhZ-26" value="" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;width=76.81818181818181;endSize=7.486363636363635;" edge="1" parent="1">
           <mxGeometry width="100" height="100" relative="1" as="geometry">

@@ -11,11 +11,11 @@ from sentence_transformers import SentenceTransformer
 # Load a pre-trained sentence encoder
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-text_model = SentenceTransformer('all-MiniLM-L6-v2')  # Uses PyTorch
+text_model = SentenceTransformer('all-MiniLM-L6-v2')
 
-model = timm.create_model('vit_base_patch14_dinov2', pretrained=True)
-model.eval()
-model.to(device)
+image_model = timm.create_model('vit_base_patch14_dinov2', pretrained=True)
+image_model.eval()
+image_model.to(device)
 
 def load_image(img_path, max_size=512, shape=(518,518)):
     ''' Load in and transform an image, making sure the image
@@ -36,18 +36,22 @@ def load_image(img_path, max_size=512, shape=(518,518)):
     image = in_transform(image)[:3,:,:].unsqueeze(0)
     return image.to(device)
 
-def extract_dinov2_features(image_path, model):
-    image_input = load_image(image_path)
+def extract_image_features(image, model):
+    image_input = load_image(image)
     with torch.no_grad():
         features = model(image_input) 
 
     return features.squeeze().cpu().numpy()
 
+def extract_text_features(text, model):
+    return model.encode(text)
 
+def main():
 
+    image_dir = "/research2/lrbutler/TextBasedImageSearch/data/raw_data/train_images/"
+    save_dir = "/home/bchen1/csci611/TextBasedImageSearch/image_feature_exploration/image_features_embedding/"
 
-# image_dir = "/research2/lrbutler/TextBasedImageSearch/data/raw_data/train_images/"
-# save_dir = "/home/bchen1/csci611/TextBasedImageSearch/image_feature_exploration/image_features_embedding/"
+    meta_files = ['TextCaps_0.1_train.json', 'TextCaps_0.1_val.json']
 
 # image_files = sorted([f for f in os.listdir(image_dir) if f.lower().endswith(".jpg")])
 # for image_file in image_files:

@@ -7,6 +7,7 @@ import os
 import numpy as np
 from io import BytesIO
 from sentence_transformers import SentenceTransformer
+import pandas as pd
 
 # Load a pre-trained sentence encoder
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -48,17 +49,47 @@ def extract_text_features(text, model):
 
 def main():
 
-    image_dir = "/research2/lrbutler/TextBasedImageSearch/data/raw_data/train_images/"
-    save_dir = "/home/bchen1/csci611/TextBasedImageSearch/image_feature_exploration/image_features_embedding/"
+    target_dir = "../data/raw_data/"
+    save_dir = "../data/formatted_data/"
 
-    meta_files = ['TextCaps_0.1_train.json', 'TextCaps_0.1_val.json']
+    image_embedding_directory = os.path.join(save_dir, 'image_embeddings')
+    if not os.path.exists(image_embedding_directory):
+        os.makedirs(image_embedding_directory)
+    
+    text_embedding_directory = os.path.join(save_dir, 'text_embeddings')
+    if not os.path.exists(text_embedding_directory):
+        os.makedirs(text_embedding_directory)
 
-# image_files = sorted([f for f in os.listdir(image_dir) if f.lower().endswith(".jpg")])
-# for image_file in image_files:
-#     image_path = os.path.join(image_dir, image_file)
-#     features = extract_dinov2_features(image_path, model)
+    mode = 'train' # ['train', 'val', 'test]
 
-#     feature_file_name = f"{os.path.splitext(image_file)[0]}_dinov2_embed.npy"
-#     feature_save_path = os.path.join(save_dir, feature_file_name)
+    if mode == 'train':
+        file = 'TextCaps_0.1_train.json'
+        directory = 'train_images'
+    elif mode == 'val':
+        file = 'TextCaps_0.1_val.json'
+        directory = 'train_images'
+    elif mode == 'test':
+        file = 'TextCaps_0.1_test.json'
+        directory = 'test_images'
 
-#     np.save(feature_save_path, features)
+    meta_data = pd.read_json(os.path.join(target_dir, file))
+    load_dir = os.path.join(target_dir, directory)
+    
+    print(meta_data['data'][0]['image_id'])
+    for i, row in meta_data.iterrows():
+        data = row['data']
+        target_image_path = os.path.join(load_dir, data['image_id'] + '.jpg')
+        caption = data['caption_str']
+
+        # Create the image feature
+        image_features = extract_image_features(target_image_path, image_model)
+        np.save(os.path.join(image_embedding_directory, f"{data['image_id']}.npy"), image_features)
+
+        # create the text feature
+        text_features = extract_text_features(caption, text_model)
+        np.save(os.path.join(text_embedding_directory, f"{data['image_id']}.npy"), text_features)
+  
+        exit()
+
+if __name__ == "__main__":
+    main()

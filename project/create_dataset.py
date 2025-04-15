@@ -89,7 +89,5 @@ def main():
         text_features = extract_text_features(caption, text_model)
         np.save(os.path.join(text_embedding_directory, f"{data['image_id']}.npy"), text_features)
   
-        exit()
-
 if __name__ == "__main__":
     main()

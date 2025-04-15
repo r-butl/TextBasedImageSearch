@@ -54,7 +54,7 @@ def main():
     target_dir = "../data/raw_data/"
     save_dir = "../data/formatted_data/"
 
-    mode = 'train' # ['train', 'val', 'test]
+    mode = 'val' # ['train', 'val', 'test]
 
     if mode == 'train':
         file = 'TextCaps_0.1_train.json'
@@ -82,19 +82,24 @@ def main():
     meta_data = pd.read_json(os.path.join(target_dir, file))
     load_dir = os.path.join(target_dir, directory)
     
+    completed_files = pd.DataFrame([f[:-4] for f in os.listdir(image_embedding_directory) if f.endswith('.npy')], columns=['file_id'])
+
     for i, row in tqdm(meta_data.iterrows(), total=len(meta_data)):
         data = row['data']
-        target_image_path = os.path.join(load_dir, data['image_id'] + '.jpg')
-        caption = data['caption_str']
+        if data['image_id'] not in completed_files['file_id'].values:
+            target_image_path = os.path.join(load_dir, data['image_id'] + '.jpg')
+            caption = data['caption_str']
 
-        # Create the image feature
-        image_features = extract_image_features(target_image_path, image_model)
-        np.save(os.path.join(image_embedding_directory, f"{data['image_id']}.npy"), image_features)
+            # Create the image feature
+            image_features = extract_image_features(target_image_path, image_model)
+            np.save(os.path.join(image_embedding_directory, f"{data['image_id']}.npy"), image_features)
 
-        # create the text feature
-        text_features = extract_text_features(caption, text_model)
-        np.save(os.path.join(text_embedding_directory, f"{data['image_id']}.npy"), text_features)
+            # create the text feature
+            text_features = extract_text_features(caption, text_model)
+            np.save(os.path.join(text_embedding_directory, f"{data['image_id']}.npy"), text_features)
+        else:
+            print(f"skipping {data['image_id']}")
 
-  
+    
 if __name__ == "__main__":
     main()

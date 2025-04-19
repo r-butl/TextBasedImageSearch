@@ -4,19 +4,14 @@
 import torch
 from sklearn.model_selection import KFold
 import torch
-from torch.utils.data import Dataset
 import ray
 from ray import tune
 import os
-import numpy as np
+
+from tqdm import tqdm
+from data_controller import EmbeddingDataset
 
 from model import Model
-
-global input_shape
-global output_shape
-
-input_shape = 512
-output_shape= 512
 
 def reset_weights(m):
   '''
@@ -69,7 +64,7 @@ def trainable(config):
                     )
     
     # Init the neural network
-    network = config['model'](input_shape, output_shape)
+    network = config['model'](config['input_shape'], config['output_shape'])
 
     # device = "cpu"
     # if torch.cuda.is_available():
@@ -91,8 +86,7 @@ def trainable(config):
       current_loss = 0.0
 
       # Iterate over the DataLoader for training data
-      for i, data in enumerate(trainloader, 0):
-        
+      for i, data in enumerate(tqdm(trainloader, desc=f"Epoch {epoch+1}"), 0):        
         # Get inputs
         inputs, targets = data
         
@@ -173,39 +167,24 @@ def trainable(config):
 #     def __getitem__(self, idx):
 #         return self.X[idx], self.y[idx]
 
-class EmbeddingDataset(Dataset):
-    def __init__(self, image_dir, text_dir):
-        self.image_paths = sorted([
-            os.path.join(image_dir, f) for f in os.listdir(image_dir) if f.endswith('.npy')
-        ])
-        self.text_paths = sorted([
-            os.path.join(text_dir, f) for f in os.listdir(text_dir) if f.endswith('.npy')
-        ])
-
-        assert len(self.image_paths) == len(self.text_paths), "Mismatched image and text embeddings"
-
-    def __len__(self):
-        return len(self.image_paths)
-
-    def __getitem__(self, idx):
-        image = torch.tensor(np.load(self.image_paths[idx]), dtype=torch.float32)
-        text = torch.tensor(np.load(self.text_paths[idx]), dtype=torch.float32)
-        return image, text
-
 if __name__ == '__main__':
   
   # Create dumby dataset
 
   # dataset = DummyDataset(in_shape=input_shape, out_shape=output_shape, num_samples=1000)
 
-  image_dir = "../data/formatted_data/train/image_embeddings"
-  text_dir = "../data/formatted_data/train/text_embeddings"
+  image_dir = os.path.abspath("../data/formatted_data/train/image_embeddings")
+  text_dir = os.path.abspath("../data/formatted_data/train/text_embeddings")
 
   dataset = EmbeddingDataset(image_dir, text_dir)
+
+  input_shape, output_shape = dataset.get_feature_sizes()
 
   search_space = {
     'dataset': dataset,
     'model': Model,
+    'input_shape': input_shape,
+    'output_shape': output_shape,
     'learning_rate': tune.loguniform(1e-5, 1e-1),
     'epochs': tune.choice([5]),
     'optimizer': tune.choice([torch.optim.Adam]),

@@ -34,19 +34,20 @@ def trainable(config):
     # Set fixed random number seed
     torch.manual_seed(42)
 
-    dataset = config['dataset']
+    train_dataset = config['train_dataset']
+    validate_dataset = config['validate_dataset']
 
-    dataset_size = len(dataset)
-    val_split = int(0.2 * dataset_size)
-    train_split = dataset_size - val_split
-    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_split, val_split])
+    # dataset_size = len(dataset)
+    # val_split = int(0.2 * dataset_size)
+    # train_split = dataset_size - val_split
+    # train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_split, val_split])
 
-    trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=config['batch_size'])
-    valloader = torch.utils.data.DataLoader(val_dataset, batch_size=config['batch_size'])
+    # Set training and validation datasets instead 
+    trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
+    valloader = torch.utils.data.DataLoader(validate_dataset, batch_size=config['batch_size'])
 
     # Init the neural network
     network = config['model'](input_shape, output_shape)
-
     network.apply(reset_weights)
 
     # Initialize optimizer
@@ -54,7 +55,7 @@ def trainable(config):
 
     # Initialize early stopping variables
     best_val_loss = float('inf')
-    patience = 3
+    patience = 7
     patience_counter = 0
 
     # Run the training loop for defined number of epochs
@@ -138,7 +139,6 @@ class DummyDataset(Dataset):
     def __getitem__(self, idx):
         return self.X[idx], self.y[idx]
 
-
 if __name__ == '__main__':
   
     # Create dumby dataset
@@ -146,7 +146,8 @@ if __name__ == '__main__':
     dataset = DummyDataset(in_shape=input_shape, out_shape=output_shape, num_samples=1000)
 
     config = {
-    'dataset': dataset,
+    'train_dataset': dataset,
+    'validate_dataset': dataset,
     'model': Model,
     'learning_rate': 1e-5,
     'epochs': 5,

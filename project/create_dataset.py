@@ -20,6 +20,16 @@ image_model = timm.create_model('vit_base_patch14_dinov2', pretrained=True)
 image_model.eval()
 image_model.to(device)
 
+def extract_image_features(image, model):
+    image_input = load_image(image)
+    with torch.no_grad():
+        features = model(image_input) 
+
+    return features.squeeze().cpu().numpy()
+
+def extract_text_features(text, model):
+    return model.encode(text)
+
 def load_image(img_path, max_size=512, shape=(518,518)):
     ''' Load in and transform an image, making sure the image
        is <= 400 pixels in the x-y dims.'''
@@ -39,66 +49,54 @@ def load_image(img_path, max_size=512, shape=(518,518)):
     image = in_transform(image)[:3,:,:].unsqueeze(0)
     return image.to(device)
 
-def extract_image_features(image, model):
-    image_input = load_image(image)
-    with torch.no_grad():
-        features = model(image_input) 
-
-    return features.squeeze().cpu().numpy()
-
-def extract_text_features(text, model):
-    return model.encode(text)
-
 def main():
-
     target_dir = "../data/raw_data/"
-    save_dir = "../data/formatted_data/"
+    save_dir_base = "../data/formatted_data/"
 
-    mode = 'val' # ['train', 'val', 'test]
+    # Load and concatenate train and val meta data
+    train_meta = pd.read_json(os.path.join(target_dir, 'TextCaps_0.1_train.json'))
+    val_meta = pd.read_json(os.path.join(target_dir, 'TextCaps_0.1_val.json'))
+    meta_data = pd.concat([train_meta, val_meta], ignore_index=True)
+    meta_data = meta_data.sample(frac=1, random_state=42).reset_index(drop=True)
 
-    if mode == 'train':
-        file = 'TextCaps_0.1_train.json'
-        directory = 'train_images'
-        save_subdir = 'train'
-    elif mode == 'val':
-        file = 'TextCaps_0.1_val.json'
-        directory = 'train_images'
-        save_subdir = 'validate'
-    elif mode == 'test':
-        file = 'TextCaps_0.1_test.json'
-        directory = 'test_images'
-        save_subdir = 'test'
+    # Split 
+    total_len = len(meta_data)
+    train_end = int(0.75 * total_len)
+    val_end = int(0.85 * total_len)
 
-    save_dir = os.path.join(save_dir, save_subdir)
+    splits = {
+        'train': meta_data.iloc[:train_end],
+        'validate': meta_data.iloc[train_end:val_end],
+        'test': meta_data.iloc[val_end:]
+    }
 
-    image_embedding_directory = os.path.join(save_dir, 'image_embeddings')
-    if not os.path.exists(image_embedding_directory):
-        os.makedirs(image_embedding_directory)
-    
-    text_embedding_directory = os.path.join(save_dir, 'text_embeddings')
-    if not os.path.exists(text_embedding_directory):
-        os.makedirs(text_embedding_directory)
+    for split_name, split_data in splits.items():
+        save_dir = os.path.join(save_dir_base, split_name)
+        image_embedding_directory = os.path.join(save_dir, 'image_embeddings')
+        text_embedding_directory = os.path.join(save_dir, 'text_embeddings')
 
-    meta_data = pd.read_json(os.path.join(target_dir, file))
-    load_dir = os.path.join(target_dir, directory)
-    
-    completed_files = pd.DataFrame([f[:-4] for f in os.listdir(image_embedding_directory) if f.endswith('.npy')], columns=['file_id'])
+        os.makedirs(image_embedding_directory, exist_ok=True)
+        os.makedirs(text_embedding_directory, exist_ok=True)
 
-    for i, row in tqdm(meta_data.iterrows(), total=len(meta_data)):
-        data = row['data']
-        if data['image_id'] not in completed_files['file_id'].values:
-            target_image_path = os.path.join(load_dir, data['image_id'] + '.jpg')
-            caption = data['caption_str']
+        image_dir = 'train_images'
+        load_dir = os.path.join(target_dir, image_dir)
 
-            # Create the image feature
-            image_features = extract_image_features(target_image_path, image_model)
-            np.save(os.path.join(image_embedding_directory, f"{data['image_id']}.npy"), image_features)
+        completed_files = pd.DataFrame([f[:-4] for f in os.listdir(image_embedding_directory) if f.endswith('.npy')], columns=['file_id'])
 
-            # create the text feature
-            text_features = extract_text_features(caption, text_model)
-            np.save(os.path.join(text_embedding_directory, f"{data['image_id']}.npy"), text_features)
-        else:
-            print(f"skipping {data['image_id']}")
+        for _, row in tqdm(split_data.iterrows(), total=len(split_data)):
+            data = row['data']
+            if data['image_id'] not in completed_files['file_id'].values:
+                target_image_path = os.path.join(load_dir, data['image_id'] + '.jpg')
+
+                caption = data['caption_str']
+
+                image_features = extract_image_features(target_image_path, image_model)
+                np.save(os.path.join(image_embedding_directory, f"{data['image_id']}.npy"), image_features)
+
+                text_features = extract_text_features(caption, text_model)
+                np.save(os.path.join(text_embedding_directory, f"{data['image_id']}.npy"), text_features)
+            else:
+                print(f"skipping {data['image_id']}")
 
     
 if __name__ == "__main__":

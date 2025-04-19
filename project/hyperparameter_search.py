@@ -156,7 +156,6 @@ def trainable(config):
   average_loss = sum/len(results.items())
   print(f"Average loss: {average_loss}")
   
-
   tune.report({"average_loss": average_loss.item()})
 
 # Dummy dataset for testings

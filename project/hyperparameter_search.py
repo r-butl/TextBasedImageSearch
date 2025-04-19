@@ -7,6 +7,8 @@ import torch
 from torch.utils.data import Dataset
 import ray
 from ray import tune
+import os
+import numpy as np
 
 from model import Model
 
@@ -156,26 +158,50 @@ def trainable(config):
   average_loss = sum/len(results.items())
   print(f"Average loss: {average_loss}")
   
+
   tune.report({"average_loss": average_loss.item()})
 
 # Dummy dataset for testings
-class DummyDataset(Dataset):
-    def __init__(self, in_shape, out_shape, num_samples=1000):
-        self.X = torch.randn(num_samples, in_shape)
-        self.y = torch.randn(num_samples, out_shape)
+# class DummyDataset(Dataset):
+#     def __init__(self, in_shape, out_shape, num_samples=1000):
+#         self.X = torch.randn(num_samples, in_shape)
+#         self.y = torch.randn(num_samples, out_shape)
+
+#     def __len__(self):
+#         return len(self.X)
+
+#     def __getitem__(self, idx):
+#         return self.X[idx], self.y[idx]
+
+class EmbeddingDataset(Dataset):
+    def __init__(self, image_dir, text_dir):
+        self.image_paths = sorted([
+            os.path.join(image_dir, f) for f in os.listdir(image_dir) if f.endswith('.npy')
+        ])
+        self.text_paths = sorted([
+            os.path.join(text_dir, f) for f in os.listdir(text_dir) if f.endswith('.npy')
+        ])
+
+        assert len(self.image_paths) == len(self.text_paths), "Mismatched image and text embeddings"
 
     def __len__(self):
-        return len(self.X)
+        return len(self.image_paths)
 
     def __getitem__(self, idx):
-        return self.X[idx], self.y[idx]
-
+        image = torch.tensor(np.load(self.image_paths[idx]), dtype=torch.float32)
+        text = torch.tensor(np.load(self.text_paths[idx]), dtype=torch.float32)
+        return image, text
 
 if __name__ == '__main__':
   
   # Create dumby dataset
 
-  dataset = DummyDataset(in_shape=input_shape, out_shape=output_shape, num_samples=1000)
+  # dataset = DummyDataset(in_shape=input_shape, out_shape=output_shape, num_samples=1000)
+
+  image_dir = "../data/formatted_data/train/image_embeddings"
+  text_dir = "../data/formatted_data/train/text_embeddings"
+
+  dataset = EmbeddingDataset(image_dir, text_dir)
 
   search_space = {
     'dataset': dataset,

@@ -64,7 +64,7 @@ def trainable(config):
                     )
     
     # Init the neural network
-    network = config['model'](config['input_shape'], config['output_shape'])
+    network = config['model'](config['input_shape'], config['output_shape'], layers=config['layers'])
 
     # device = "cpu"
     # if torch.cuda.is_available():
@@ -152,27 +152,10 @@ def trainable(config):
   average_loss = sum/len(results.items())
   print(f"Average loss: {average_loss}")
   
-
   tune.report({"average_loss": average_loss.item()})
-
-# Dummy dataset for testings
-# class DummyDataset(Dataset):
-#     def __init__(self, in_shape, out_shape, num_samples=1000):
-#         self.X = torch.randn(num_samples, in_shape)
-#         self.y = torch.randn(num_samples, out_shape)
-
-#     def __len__(self):
-#         return len(self.X)
-
-#     def __getitem__(self, idx):
-#         return self.X[idx], self.y[idx]
 
 if __name__ == '__main__':
   
-  # Create dumby dataset
-
-  # dataset = DummyDataset(in_shape=input_shape, out_shape=output_shape, num_samples=1000)
-
   image_dir = os.path.abspath("../data/formatted_data/train/image_embeddings")
   text_dir = os.path.abspath("../data/formatted_data/train/text_embeddings")
 
@@ -180,20 +163,61 @@ if __name__ == '__main__':
 
   input_shape, output_shape = dataset.get_feature_sizes()
 
-  search_space = {
+  print(input_shape, output_shape)
+
+  mode = 'model_sizing'
+  mode = 'hyperparameters'
+
+  if mode == 'model_sizing':
+
+    search_space = {
+      'dataset': dataset,
+      'model': Model,
+      'layers': tune.choice([
+        [512, 256],
+        [768, 512, 384],
+        [1024, 768, 512, 384]
+      ]),
+      'input_shape': input_shape,
+      'output_shape': output_shape,
+      'learning_rate': tune.choice([1e-5]),
+      'epochs': tune.choice([5]),
+      'optimizer': tune.choice([torch.optim.Adam]),
+      'batch_size': tune.choice([16])
+    }
+
+    ray.init(ignore_reinit_error=True)
+    
+    analysis = tune.run(
+      trainable,
+      config=search_space,
+      name='model_sizing_experiment',
+      storage_path=os.path.join(os.getcwd(), 'model_sizing_results'),
+      verbose=1
+    )
+
+  elif mode == 'hyperparameters':
+
+    search_space = {
     'dataset': dataset,
     'model': Model,
     'input_shape': input_shape,
     'output_shape': output_shape,
-    'learning_rate': tune.loguniform(1e-5, 1e-1),
+    'layers': tune.choice([
+      [768, 512, 384],
+    ]),
+    'learning_rate': tune.choice([1e-5]),
     'epochs': tune.choice([5]),
     'optimizer': tune.choice([torch.optim.Adam]),
-    'batch_size': tune.choice([2, 4, 8, 16, 32])
-  }
+    'batch_size': tune.choice([16])
+    }
 
-  ray.init(ignore_reinit_error=True)
-  analysis = tune.run(
-    trainable,
-    config=search_space,
-    verbose=1
-  )
+    ray.init(ignore_reinit_error=True)
+    
+    analysis = tune.run(
+      trainable,
+      config=search_space,
+      name='hyperparameter_search',
+      storage_path=os.path.join(os.getcwd(), 'hyperparameter_search_results'),
+      verbose=1
+    )

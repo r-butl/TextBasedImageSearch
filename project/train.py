@@ -7,14 +7,10 @@ import torch
 from torch.utils.data import Dataset
 import ray
 from ray import tune
+import os
 
 from model import Model
-
-global input_shape
-global output_shape
-
-input_shape = 512
-output_shape= 512
+from data_controller import EmbeddingDataset
 
 def reset_weights(m):
   '''
@@ -28,6 +24,7 @@ def reset_weights(m):
 
 def trainable(config):
 
+
     # Configuration options
     loss_function = torch.nn.functional.cosine_similarity
 
@@ -37,17 +34,18 @@ def trainable(config):
     train_dataset = config['train_dataset']
     validate_dataset = config['validate_dataset']
 
-    # dataset_size = len(dataset)
-    # val_split = int(0.2 * dataset_size)
-    # train_split = dataset_size - val_split
-    # train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_split, val_split])
-
     # Set training and validation datasets instead 
     trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
     valloader = torch.utils.data.DataLoader(validate_dataset, batch_size=config['batch_size'])
 
     # Init the neural network
-    network = config['model'](input_shape, output_shape)
+    network = config['model'](config['input_shape'], config['output_shape'], config['layers'])
+
+    device = "cpu"
+    if torch.cuda.is_available():
+        device = "cuda:0"
+    network.to(device)
+
     network.apply(reset_weights)
 
     # Initialize optimizer
@@ -72,6 +70,7 @@ def trainable(config):
 
             # Get inputs
             inputs, targets = data
+            inputs, targets = inputs.to(device), targets.to(device)
 
             # Zero the gradients
             optimizer.zero_grad()
@@ -103,6 +102,8 @@ def trainable(config):
         with torch.no_grad():
             for val_data in valloader:
                 val_inputs, val_targets = val_data
+                val_inputs, val_targets = val_inputs.to(device), val_targets.to(device)
+
                 val_outputs = network(val_inputs)
                 val_cos_sim = torch.nn.functional.cosine_similarity(val_outputs, val_targets, dim=1)
                 val_loss += (1 - val_cos_sim.mean()).item()
@@ -125,32 +126,30 @@ def trainable(config):
     # Process is complete.
     print('Training process has finished. Saving trained model.')
 
-    tune.report({"final_val_loss": val_loss})
-
-# Dummy dataset for testings
-class DummyDataset(Dataset):
-    def __init__(self, in_shape, out_shape, num_samples=1000):
-        self.X = torch.randn(num_samples, in_shape)
-        self.y = torch.randn(num_samples, out_shape)
-
-    def __len__(self):
-        return len(self.X)
-
-    def __getitem__(self, idx):
-        return self.X[idx], self.y[idx]
 
 if __name__ == '__main__':
-  
-    # Create dumby dataset
 
-    dataset = DummyDataset(in_shape=input_shape, out_shape=output_shape, num_samples=1000)
+    train_image_dir = os.path.abspath("../data/formatted_data/train/image_embeddings")
+    train_text_dir = os.path.abspath("../data/formatted_data/train/text_embeddings")
+    train_dataset = EmbeddingDataset(train_image_dir, train_text_dir)
+
+    validate_image_dir = os.path.abspath("../data/formatted_data/validate/image_embeddings")
+    validate_text_dir = os.path.abspath("../data/formatted_data/validate/text_embeddings")
+    validate_dataset = EmbeddingDataset(validate_image_dir, validate_text_dir)
+
+    input_shape, output_shape = train_dataset.get_feature_sizes()
 
     config = {
-    'train_dataset': dataset,
-    'validate_dataset': dataset,
+    'train_dataset': train_dataset,
+    'validate_dataset': validate_dataset,
     'model': Model,
-    'learning_rate': 1e-5,
-    'epochs': 5,
+    'input_shape': input_shape,
+    'output_shape': output_shape,
+    'layers': 
+      [1024, 768, 512, 384]
+    ,
+    'learning_rate': 1e-4,
+    'epochs': 100,
     'optimizer': torch.optim.Adam,
     'batch_size': 16
     }

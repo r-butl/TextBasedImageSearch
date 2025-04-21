@@ -66,10 +66,10 @@ def trainable(config):
     # Init the neural network
     network = config['model'](config['input_shape'], config['output_shape'], layers=config['layers'])
 
-    # device = "cpu"
-    # if torch.cuda.is_available():
-    #     device = "cuda:0"
-    # network.to(device)
+    device = "cpu"
+    if torch.cuda.is_available():
+        device = "cuda:0"
+    network.to(device)
 
     network.apply(reset_weights)
 
@@ -89,6 +89,7 @@ def trainable(config):
       for i, data in enumerate(tqdm(trainloader, desc=f"Epoch {epoch+1}"), 0):        
         # Get inputs
         inputs, targets = data
+        inputs, targets = inputs.to(device), targets.to(device)
         
         # Zero the gradients
         optimizer.zero_grad()
@@ -129,6 +130,7 @@ def trainable(config):
 
         # Get inputs
         inputs, targets = data
+        inputs, targets = inputs.to(device), targets.to(device)
 
         # Generate outputs
         outputs = network(inputs)
@@ -165,7 +167,7 @@ if __name__ == '__main__':
 
   print(input_shape, output_shape)
 
-  mode = 'model_sizing'
+  # mode = 'model_sizing'
   mode = 'hyperparameters'
 
   if mode == 'model_sizing':
@@ -173,7 +175,7 @@ if __name__ == '__main__':
     search_space = {
       'dataset': dataset,
       'model': Model,
-      'layers': tune.choice([
+      'layers': tune.grid_search([
         [512, 256],
         [768, 512, 384],
         [1024, 768, 512, 384]
@@ -193,7 +195,8 @@ if __name__ == '__main__':
       config=search_space,
       name='model_sizing_experiment',
       storage_path=os.path.join(os.getcwd(), 'model_sizing_results'),
-      verbose=1
+      verbose=1,
+    resources_per_trial={"cpu": 1, "gpu": 1},
     )
 
   elif mode == 'hyperparameters':
@@ -204,12 +207,12 @@ if __name__ == '__main__':
     'input_shape': input_shape,
     'output_shape': output_shape,
     'layers': tune.choice([
-      [768, 512, 384],
+      [1024, 768, 512, 384]
     ]),
-    'learning_rate': tune.choice([1e-5]),
+    'learning_rate': tune.grid_search([1e-3, 1e-4, 1e-5]),
     'epochs': tune.choice([5]),
     'optimizer': tune.choice([torch.optim.Adam]),
-    'batch_size': tune.choice([16])
+    'batch_size': tune.grid_search([8, 16, 32])
     }
 
     ray.init(ignore_reinit_error=True)
@@ -219,5 +222,6 @@ if __name__ == '__main__':
       config=search_space,
       name='hyperparameter_search',
       storage_path=os.path.join(os.getcwd(), 'hyperparameter_search_results'),
-      verbose=1
+      verbose=1,
+      resources_per_trial={"cpu": 1, "gpu": 1},
     )

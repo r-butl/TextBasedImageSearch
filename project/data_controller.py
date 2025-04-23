@@ -26,16 +26,16 @@ class EmbeddingDataset(Dataset):
 
     def __getitem__(self, idx):
         if self.cache:
-            return self.image_data[idx], self.text_data[idx]
+            return  self.text_data[idx], self.image_data[idx]
         else:
             image = torch.tensor(np.load(self.image_paths[idx]), dtype=torch.float32)
             text = torch.tensor(np.load(self.text_paths[idx]), dtype=torch.float32)
-            return image, text
+            return text, image
 
     def get_feature_sizes(self):
         if self.cache:
-            return self.image_data[0].shape[0], self.text_data[0].shape[0]
+            return self.text_data[0].shape[0],  self.image_data[0].shape[0]
         else:
             sample_image = np.load(self.image_paths[0])
             sample_text = np.load(self.text_paths[0])
-            return sample_image.shape[0], sample_text.shape[0]
+            return sample_text.shape[0], sample_image.shape[0]

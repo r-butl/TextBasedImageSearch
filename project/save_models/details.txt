@@ -1,6 +1,6 @@
 MRR: 0.123
 variance: 0.2622
 
-Input size: 768
-Output size: 384
+Input size: 384
+Output size: 768
 layers = [1024, 768, 512, 384]

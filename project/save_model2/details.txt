@@ -1,0 +1,4 @@
+Mean Reciprocal Rank (MRR): 0.0330
+Standard Deviation of Reciprocal Ranks: 0.1081
+
+layers: [512, 1024, 2048, 2048, 1024]

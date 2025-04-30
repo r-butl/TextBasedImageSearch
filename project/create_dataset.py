@@ -50,8 +50,8 @@ def load_image(img_path, max_size=512, shape=(518,518)):
     return image.to(device)
 
 def main():
-    target_dir = "../data/raw_data/"
-    save_dir_base = "../data/formatted_data/"
+    target_dir = "./dataset/"
+    save_dir_base = "./formatted_data/"
 
     # Load and concatenate train and val meta data
     train_meta = pd.read_json(os.path.join(target_dir, 'TextCaps_0.1_train.json'))

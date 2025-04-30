@@ -51,13 +51,13 @@ def mrr(model, dataset):
     return mrr_value
 
 def main():
-    image_dir = os.path.abspath("../data/formatted_data/test/image_embeddings")
-    text_dir = os.path.abspath("../data/formatted_data/test/text_embeddings")
+    image_dir = os.path.abspath("./formatted_data/test/image_embeddings")
+    text_dir = os.path.abspath("./formatted_data/test/text_embeddings")
 
     dataset = EmbeddingDataset(image_dir, text_dir)
 
     input_shape, output_shape = dataset.get_feature_sizes()
-    layers = [1024, 768, 512, 384]
+    layers = [512, 1024, 2048, 2048, 1024]
 
     network = Model(input_shape, output_shape, layers=layers)
 

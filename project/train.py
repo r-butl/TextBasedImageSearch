@@ -5,6 +5,7 @@ import torch
 from sklearn.model_selection import KFold
 import torch
 from torch.utils.data import Dataset
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import ray
 from ray import tune
 import os
@@ -33,7 +34,6 @@ def trainable(config):
 
     train_dataset = config['train_dataset']
     validate_dataset = config['validate_dataset']
-
     # Set training and validation datasets instead 
     trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
     valloader = torch.utils.data.DataLoader(validate_dataset, batch_size=config['batch_size'])
@@ -50,6 +50,7 @@ def trainable(config):
 
     # Initialize optimizer
     optimizer = config['optimizer'](network.parameters(), lr=config['learning_rate'])
+    lr_scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=4)
 
     # Initialize early stopping variables
     best_val_loss = float('inf')
@@ -122,6 +123,8 @@ def trainable(config):
                 print("Early stopping due to no improvement in validation loss.")
                 break
         network.train()
+
+        lr_scheduler.step(val_loss)
         
     # Process is complete.
     print('Training process has finished. Saving trained model.')
@@ -129,12 +132,12 @@ def trainable(config):
 
 if __name__ == '__main__':
 
-    train_image_dir = os.path.abspath("../data/formatted_data/train/image_embeddings")
-    train_text_dir = os.path.abspath("../data/formatted_data/train/text_embeddings")
+    train_image_dir = os.path.abspath("./formatted_data/train/image_embeddings")
+    train_text_dir = os.path.abspath("./formatted_data/train/text_embeddings")
     train_dataset = EmbeddingDataset(train_image_dir, train_text_dir)
 
-    validate_image_dir = os.path.abspath("../data/formatted_data/validate/image_embeddings")
-    validate_text_dir = os.path.abspath("../data/formatted_data/validate/text_embeddings")
+    validate_image_dir = os.path.abspath("./formatted_data/validate/image_embeddings")
+    validate_text_dir = os.path.abspath("./formatted_data/validate/text_embeddings")
     validate_dataset = EmbeddingDataset(validate_image_dir, validate_text_dir)
 
     input_shape, output_shape = train_dataset.get_feature_sizes()
@@ -146,12 +149,12 @@ if __name__ == '__main__':
     'input_shape': input_shape,
     'output_shape': output_shape,
     'layers': 
-      [1024, 768, 512, 384]
+      [ 1024, 2048, 1024]
     ,
     'learning_rate': 1e-4,
-    'epochs': 100,
+    'epochs': 200,
     'optimizer': torch.optim.Adam,
-    'batch_size': 16
+    'batch_size': 32
     }
 
     trainable(config)

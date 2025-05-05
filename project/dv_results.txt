@@ -1,0 +1,9 @@
+--- Fine-Grained Level ---
+Average Precision: 0.3307
+Average Recall: 0.7573
+Average Jaccard: 0.2997
+
+--- Coarse-Grained Level ---
+Average Precision: 0.3931
+Average Recall: 0.7970
+Average Jaccard: 0.3586
